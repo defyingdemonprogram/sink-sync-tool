@@ -290,7 +290,7 @@ def generate_self_signed_cert():
     print(f"[sink] New SSL certificate generated. Fingerprint: {CERT_FINGERPRINT[:16]}...")
 
 class SinkHandler(BaseHTTPRequestHandler):
-    def do_post(self):
+    def do_POST(self):
         device_id = self.headers.get("X-Sink-Device-ID")
         remote_device_name = self.headers.get("X-Sink-Device-Name", "remote_device")
 
@@ -312,7 +312,7 @@ class SinkHandler(BaseHTTPRequestHandler):
                             headers = {"X-Sink-Device-ID": DEVICE_ID, "X-Sink-Device-Name": get_hostname()}
                             requests.post(f"http://{peer_ip}:{PEER_PORT}/auth", headers=headers, json={"action": "confirm_trust"}, timeout=5)
                         except requests.exceptions.RequestException as err:
-                            print(f"ERROR: SinkHandler.do_post error due to {err}")
+                            print(f"ERROR: SinkHandler.do_POST error due to {err}")
                     elif device_id in peer_status:
                         state = peer_status[device_id]["state"]
                         if state == "requested":
@@ -324,7 +324,7 @@ class SinkHandler(BaseHTTPRequestHandler):
                                 headers = {"X-Sink-Device-ID": DEVICE_ID, "X-Sink-Device-Name": get_hostname()}
                                 requests.post(f"http://{peer_ip}:{PEER_PORT}/auth", headers=headers, json={"action": "confirm_trust"}, timeout=5)
                             except requests.exceptions.RequestException as err:
-                                print(f"ERROR: SinkHandler.do_post error due to {err}")
+                                print(f"ERROR: SinkHandler.do_POST error due to {err}")
                             threading.Thread(target=sync_folder_to_peer, args=(newly_trusted_peer,), daemon=True).start()
                         else:
                             peer_status[device_id]["state"] = "approved"

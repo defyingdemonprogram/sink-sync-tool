@@ -1,4 +1,6 @@
 .venv
+.sink
+.sinktmp
 .sink_ignore
 sync
 __pycache__

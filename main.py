@@ -251,6 +251,18 @@ def rmdir_on_peers(rel_path):
         except Exception as err:
             print(f"ERROR: rmdir_on_peers failed due to {err}")
 
+def mkdir_on_peers(rel_path):
+    with peer_lock:
+        peers = list(known_peers.values())
+    for peer in peers:
+        peer_ip = peer["ip"]
+        try:
+            data = json.dumps({"rel_path": rel_path})
+            headers = {"X-Sink-Device-ID": DEVICE_ID}
+            requests.post(f"http://{peer_ip}:{PEER_PORT}/mkdir", headers=headers, data=data, timeout=5)
+        except Exception as err:
+            print(f"ERROR: mkdir_on_peers failed due to {err}")
+
 def generate_self_signed_cert():
     global CERT_FINGERPRINT
     if CERT_FILE.exists() and KEY_FILE.exists():

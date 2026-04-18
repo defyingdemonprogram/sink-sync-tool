@@ -376,7 +376,7 @@ class SinkHandler(BaseHTTPRequestHandler):
             rel_path = meta["rel_path"]
             dest = abs_path(rel_path)
             dest.parent.mkdir(parents=True, exist_ok=True)
-            tmp = dest.with_suffix(dest.suffix + "sinktmp")
+            tmp = dest.parent / (dest.name + ".sinktmp")
 
             with open(tmp, "wb") as fp:
                 fp.write(content)

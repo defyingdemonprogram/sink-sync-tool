@@ -69,6 +69,17 @@ def abs_path(rel):
 def is_tempfile(path):
     return str(path).endswith(".sinktmp")
 
+def is_ignored(rel_path):
+    rel_str = str(rel_path)
+    with ignore_lock:
+        for pat in ignore_patterns:
+            if rel_str.startswith(pat) or "/" + rel_str in pat or rel_str + "/" in pat:
+                return True
+            if pat.count("/") == 0:
+                if rel_str.endswith(pat):
+                    return True
+    return False
+
 def load_sinkignore():
     patterns = []
     if SINKIGNORE_PATH.exists():
@@ -326,20 +337,6 @@ class SinkHandler(BaseHTTPRequestHandler):
                             except requests.exceptions.RequestException as err:
                                 print(f"ERROR: SinkHandler.do_POST error due to {err}")
                             threading.Thread(target=sync_folder_to_peer, args=(newly_trusted_peer,), daemon=True).start()
-elif command == 'exit':
-                print("[sink] Exiting...")
-                os._exit(0)
-            else:
-                            peer_status[device_id]["state"] = "approved"
-                            print(f"[sink] {remote_device_name} ({device_id}) wants to sync.")
-                            print(f"[sink] To approve, type 'trust {device_id}'")
-                    elif action == "confirm_trust":
-                        if device_id in peer_status and peer_status[device_id]["state"] == "requested":
-                            print(f"[sink] {remote_device_name} ({device_id}) confirmed trust.")
-                            add_trusted_devices(device_id, remote_device_name, self.client_address[0])
-                            newly_trusted_peer = peer_status.pop(device_id)
-                            known_peers[device_id] = newly_trusted_peer
-                            threading.Thread(target=sync_folder_to_peer, args=(newly_trusted_peer,), daemon=True).start()
 
             self.send_response(200)
             self.end_headers()
@@ -568,6 +565,10 @@ def handle_user_input():
                             print("[sink] Already requested. Waiting for them to approve.")
                     else:
                         print(f"[sink] Device {peer_id} not found. Waiting for discovery...")
+
+            elif command == 'exit':
+                print("[sink] Exiting...")
+                os._exit(0)
 
             elif command == 'devices':
                 print("\n--- sink LAN Devices ---")

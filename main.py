@@ -25,7 +25,7 @@ SYNC_FOLDER = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.cwd() / "sync"
 SYNC_FOLDER.mkdir(exist_ok=True)
 PEER_PORT = 7171
 SERVICE_TYPE = "_internallan._tcp.local."
-DEVICE_ID = str(uuid.uuid7())[:8]
+DEVICE_ID = str(uuid.uuid4())[:8]
 SERVICE_NAME = f"sink-{DEVICE_ID}._internallan._tcp.local."
 
 CONFIG_DIR = Path(__file__).parent / ".sink_ignore"

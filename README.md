@@ -40,6 +40,7 @@ Once started, Sink provides an interactive prompt for managing connections:
 
 - `devices`: List all discovered, trusted, and pending devices.
 - `trust <device_id>`: Request to sync with a discovered device or approve an incoming trust request.
+- `exit`: Stop the sync server.
 
 ### Ignoring Files
 

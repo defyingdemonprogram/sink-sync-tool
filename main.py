@@ -173,7 +173,7 @@ def is_device_trusted(device_id):
 def add_trusted_devices(device_id, name, ip):
     devices = load_trusted_devices()
     if device_id not in devices:
-        print("[sink] Trusting new device: {name} ({device_id})")
+        print(f"[sink] Trusting new device: {name} ({device_id})")
     devices[device_id] = {"device_id": device_id, "name": name, "last_ip": ip}
     save_trusted_devices(devices)
     return True
@@ -326,7 +326,10 @@ class SinkHandler(BaseHTTPRequestHandler):
                             except requests.exceptions.RequestException as err:
                                 print(f"ERROR: SinkHandler.do_POST error due to {err}")
                             threading.Thread(target=sync_folder_to_peer, args=(newly_trusted_peer,), daemon=True).start()
-                        else:
+elif command == 'exit':
+                print("[sink] Exiting...")
+                os._exit(0)
+            else:
                             peer_status[device_id]["state"] = "approved"
                             print(f"[sink] {remote_device_name} ({device_id}) wants to sync.")
                             print(f"[sink] To approve, type 'trust {device_id}'")
@@ -435,7 +438,7 @@ class PeerListener:
                     with peer_lock:
                         if is_device_trusted(peer_id):
                             if peer_id not in known_peers:
-                                print("[sink] Found trusted peer {peer_name} ({ip})")
+                                print(f"[sink] Found trusted peer {peer_name} ({ip})")
                                 update_device_ip(peer_id, ip)
                                 peer_info = {"ip": ip, "device_id": peer_id, "name": peer_name}
                                 known_peers[peer_id] = peer_info
@@ -524,10 +527,11 @@ def poll_and_sync():
 
 def handle_user_input():
     time.sleep(2)
-    print("[sink] Ready. Type 'devices' to see discovered devices or 'trust <id>' to connect.")
+    print("[sink] Ready. Type 'devices', 'trust <id>' to connect, or 'exit' to quit.")
+    print("[sink] Press Ctrl+C to exit.\n")
     while True:
         try:
-            cmd = input("> ")
+            cmd = input("\033[1;32msink>\033[0m ")
             parts = cmd.strip().split()
             if not parts: continue
 
@@ -597,7 +601,7 @@ def handle_user_input():
                     print("No other devices found yet.")
                 print("------------------------")
             else:
-                print(f"Unknown command. Available: devices, trust <device_id>")
+                print("Unknown command. Available: devices, trust <device_id>, exit")
         except (EOFError, KeyboardInterrupt):
             break
         except Exception as e:

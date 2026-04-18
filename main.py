@@ -205,7 +205,7 @@ def sync_folder_to_peer(peer):
         if typ == "dir":
             mkdir_on_peers(path)
         elif typ == "file":
-            absf = abs_file(path)
+            absf = abs_path(path)
             sync_to_peers(path, absf, val)
 
 def sync_to_peers(rel_path, abs_path, filehash):

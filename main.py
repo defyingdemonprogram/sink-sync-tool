@@ -350,6 +350,15 @@ class SinkHandler(BaseHTTPRequestHandler):
                                 print(f"ERROR: SinkHandler.do_POST error due to {err}")
                             threading.Thread(target=sync_folder_to_peer, args=(newly_trusted_peer,), daemon=True).start()
 
+                elif action == "confirm_trust":
+                    peer_ip = self.client_address[0]
+                    if not is_device_trusted(device_id):
+                        print(f"[sink] Trust confirmed by {remote_device_name} ({device_id}).")
+                        add_trusted_devices(device_id, remote_device_name, peer_ip)
+                        newly_trusted_peer = {"ip": peer_ip, "device_id": device_id, "name": remote_device_name}
+                        known_peers[device_id] = newly_trusted_peer
+                        threading.Thread(target=sync_folder_to_peer, args=(newly_trusted_peer,), daemon=True).start()
+
             self.send_response(200)
             self.end_headers()
             return

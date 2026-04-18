@@ -28,7 +28,7 @@ SERVICE_TYPE = "_internallan._tcp.local."
 DEVICE_ID = str(uuid.uuid4())[:8]
 SERVICE_NAME = f"sink-{DEVICE_ID}._internallan._tcp.local."
 
-CONFIG_DIR = Path(__file__).parent / ".sink_ignore"
+CONFIG_DIR = Path(__file__).parent / ".sink"
 CONFIG_DIR.mkdir(exist_ok=True)
 
 SINKIGNORE_PATH = Path(__file__).parent / ".sinkignore"
